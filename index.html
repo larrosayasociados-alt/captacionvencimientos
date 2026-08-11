@@ -706,6 +706,7 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
     window.__sheetStatus = 'Enviando…';
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
         nombre, telefono, email,
@@ -715,10 +716,12 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
         comentario,
         resumenTexto: summary
       })
-    }).then(res => res.text().then(txt => {
-      window.__sheetStatus = 'HTTP ' + res.status + ' — ' + txt.slice(0,300);
+    }).then(() => {
+      // en modo no-cors el navegador no permite leer la respuesta,
+      // pero si esto se ejecuta, la petición sí llegó al servidor
+      window.__sheetStatus = 'Enviado (revisá la planilla para confirmar)';
       pintarEstadoSheet();
-    })).catch(err => {
+    }).catch(err => {
       window.__sheetStatus = 'Error de red — ' + (err && err.message ? err.message : err);
       pintarEstadoSheet();
     });
