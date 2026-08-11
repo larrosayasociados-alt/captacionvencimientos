@@ -479,6 +479,7 @@
     <p class="hint" id="okHint" style="margin-bottom:10px;">Gracias, nos pondremos en contacto antes del vencimiento.</p>
     <p class="hint" id="errHint" style="display:none;margin-bottom:10px;">Probá tocar el botón de abajo para enviarlo por email, o copiá el resumen.</p>
     <p class="hint" id="errDetalle" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--coral);"></p>
+    <p class="hint" id="sheetDebug" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8367;">Registro en planilla: —</p>
     <div class="summary-block" id="summaryText"></div>
     <div class="action-row">
       <button type="button" id="copyBtn">Copiar resumen</button>
@@ -696,7 +697,13 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
     };
   });
 
+  window.__sheetStatus = 'No configurado';
+  function pintarEstadoSheet(){
+    const el = document.getElementById('sheetDebug');
+    if(el) el.textContent = 'Registro en planilla: ' + window.__sheetStatus;
+  }
   if(APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf('PEGAR_URL') === -1){
+    window.__sheetStatus = 'Enviando…';
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -708,12 +715,24 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
         comentario,
         resumenTexto: summary
       })
-    }).catch(()=>{ /* si falla el registro en la planilla, no interrumpe el envío principal */ });
+    }).then(res => res.text().then(txt => {
+      window.__sheetStatus = 'HTTP ' + res.status + ' — ' + txt.slice(0,300);
+      pintarEstadoSheet();
+    })).catch(err => {
+      window.__sheetStatus = 'Error de red — ' + (err && err.message ? err.message : err);
+      pintarEstadoSheet();
+    });
+  }
+
+  function pintarEstadoSheet(){
+    const el = document.getElementById('sheetDebug');
+    if(el) el.textContent = 'Registro en planilla: ' + window.__sheetStatus;
   }
 
   const submitBtn = document.getElementById('submitBtn');
   submitBtn.disabled = true;
   submitBtn.textContent = 'Enviando…';
+  pintarEstadoSheet();
 
   const fd = new FormData();
   fd.append('nombre', nombre);
