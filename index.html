@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis seguros y vencimientos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241012;
+    --teal:#7A1E28;
+    --brass:#C8102E;
+    --brass-light:#E8536A;
+    --paper:#F3F0E7;
+    --paper-dark:#E7E1CF;
+    --card:#FBFAF6;
+    --coral:#9C2B2B;
+    --line:#D8D0B8;
+    --ok:#3E6B57;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(200,16,46,0.07), transparent 45%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(22,35,59,0.02) 40px);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    padding:0 0 60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:28px 20px 0;}
+
+  /* ---- Cover / masthead ---- */
+  .cover{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:14px;
+    padding:30px 26px 24px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 12px 30px -14px rgba(22,35,59,0.5);
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    top:0;right:0;bottom:0;
+    width:110px;
+    background:repeating-linear-gradient(-45deg, rgba(200,16,46,0.14) 0 2px, transparent 2px 14px);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--brass-light);
+    margin:0 0 10px;
+  }
+  .cover h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,36px);
+    line-height:1.08;
+    margin:0 0 10px;
+    max-width:80%;
+  }
+  .cover p{
+    margin:0;
+    font-size:14.5px;
+    color:#C9D2DE;
+    max-width:85%;
+  }
+  .folio{
+    margin-top:20px;
+    display:flex;
+    gap:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:#8FA0B8;
+  }
+
+  .gift-banner{
+    background:var(--brass-light);
+    color:var(--ink);
+    font-weight:600;
+    font-size:14px;
+    text-align:center;
+    padding:11px 14px;
+    border-radius:10px;
+    margin-top:12px;
+  }
+
+  /* ---- Tab index (progress) ---- */
+  .tab-index{
+    display:flex;
+    gap:6px;
+    margin:18px 0 22px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+  .tab-index .idx{
+    flex:0 0 auto;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.04em;
+    padding:6px 11px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    color:#8A8367;
+    background:var(--card);
+    white-space:nowrap;
+    transition:all .25s ease;
+  }
+  .tab-index .idx.done{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#EFEAD9;
+  }
+
+  /* ---- Sections ---- */
+  section.sheet{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px 20px;
+    margin-bottom:16px;
+    position:relative;
+  }
+  section.sheet::before{
+    content:attr(data-num);
+    position:absolute;
+    top:-11px;
+    left:18px;
+    background:var(--brass);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:500;
+    padding:2px 9px;
+    border-radius:5px;
+  }
+  h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:19px;
+    margin:6px 0 4px;
+    color:var(--ink);
+  }
+  .hint{
+    font-size:13px;
+    color:#6B6553;
+    margin:0 0 16px;
+  }
+  label.field{
+    display:block;
+    margin-bottom:14px;
+  }
+  label.field:last-child{margin-bottom:0;}
+  .field-label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--teal);
+    margin-bottom:5px;
+    letter-spacing:.01em;
+  }
+  input[type=text], input[type=tel], input[type=email], input[type=month], textarea{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    padding:11px 12px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    outline-offset:2px;
+  }
+  input:focus-visible, textarea:focus-visible, button:focus-visible, .tab-btn:focus-visible{
+    outline:2.5px solid var(--brass);
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  /* ---- Insurance folder tabs (checkbox grid) ---- */
+  .folder-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+  }
+  @media(min-width:480px){.folder-grid{grid-template-columns:repeat(3,1fr);}}
+  .tab-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 10px;
+    border-radius:9px 9px 3px 3px;
+    border:1.5px solid var(--line);
+    border-bottom-width:4px;
+    background:var(--paper-dark);
+    cursor:pointer;
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--ink);
+    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+    user-select:none;
+  }
+  .tab-btn .dot{
+    width:8px;height:8px;border-radius:50%;
+    border:1.5px solid #A79E7E;
+    flex:0 0 auto;
+    transition:all .15s ease;
+  }
+  .tab-btn.checked{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+  .tab-btn.checked .dot{
+    background:var(--brass-light);
+    border-color:var(--brass-light);
+  }
+  .tab-btn:active{transform:translateY(2px);}
+  .tab-btn input{position:absolute;opacity:0;pointer-events:none;}
+
+  /* ---- Dynamic policy cards ---- */
+  #policyCards{margin-top:16px;display:flex;flex-direction:column;gap:12px;}
+  .policy-card{
+    border:1.5px dashed var(--brass);
+    border-radius:10px;
+    padding:14px 14px 6px;
+    background:#FFFDF7;
+    animation:slideIn .3s ease;
+  }
+  @media (prefers-reduced-motion:reduce){.policy-card{animation:none;}}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+  .policy-card .pc-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--coral);
+    margin:0 0 10px;
+  }
+  .pc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pc-row.pc-row-3{grid-template-columns:1.3fr 1fr 1fr;}
+  @media(max-width:520px){.pc-row.pc-row-3{grid-template-columns:1fr 1fr;}}
+  @media(max-width:420px){.pc-row{grid-template-columns:1fr;}}
+
+  /* ---- Radio pills ---- */
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{
+    padding:9px 16px;
+    border-radius:999px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:13.5px;
+    cursor:pointer;
+    color:var(--ink);
+    transition:all .12s ease;
+  }
+  .pill.checked{background:var(--brass);border-color:var(--brass);color:var(--ink);font-weight:600;}
+  .pill input{position:absolute;opacity:0;pointer-events:none;}
+
+  /* ---- Consent checkbox ---- */
+  .consent-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:13.5px;
+    cursor:pointer;
+    color:var(--ink);
+    transition:all .12s ease;
+  }
+  .consent-box.checked{background:#EFF6F1;border-color:var(--ok);}
+  .consent-box input{position:absolute;opacity:0;pointer-events:none;}
+  .consent-box .check-visual{
+    flex:0 0 auto;
+    width:19px;height:19px;
+    border-radius:5px;
+    border:1.5px solid #A79E7E;
+    background:#fff;
+    position:relative;
+    transition:all .15s ease;
+  }
+  .consent-box.checked .check-visual{
+    background:var(--ok);
+    border-color:var(--ok);
+  }
+  .consent-box.checked .check-visual::after{
+    content:"";
+    position:absolute;
+    left:5px;top:1px;
+    width:6px;height:11px;
+    border:solid #fff;
+    border-width:0 2px 2px 0;
+    transform:rotate(40deg);
+  }
+
+  /* ---- Submit ---- */
+  .submit-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:16.5px;
+    cursor:pointer;
+    margin-top:6px;
+    transition:background .15s ease;
+  }
+  .submit-btn:hover{background:#233457;}
+  .error-msg{
+    color:var(--coral);
+    font-size:12.5px;
+    margin-top:8px;
+    display:none;
+  }
+
+  /* ---- Summary / confirmation view ---- */
+  #summaryView{display:none;}
+  .stamp{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--ok);
+    color:#fff;
+    padding:8px 14px;
+    border-radius:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+  .summary-block{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:16px 16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    white-space:pre-wrap;
+    color:#333;
+    line-height:1.6;
+    max-height:340px;
+    overflow-y:auto;
+  }
+  .action-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .action-row a, .action-row button{
+    flex:1 1 140px;
+    text-align:center;
+    padding:12px 10px;
+    border-radius:9px;
+    font-size:13.5px;
+    font-weight:600;
+    text-decoration:none;
+    cursor:pointer;
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+  }
+  .action-row a.whatsapp{background:#25D366;border-color:#25D366;color:#fff;}
+  .action-row a.mail{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+  footer{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:#A79E7E;
+    margin-top:22px;
+    letter-spacing:.04em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="cover">
+    <p class="eyebrow">A completar por ti</p>
+    <h1>¡Queremos conocerte más!</h1>
+    <p>Cuéntanos qué seguros tienes contratados, cuánto pagas y cuándo vencen. Así te avisamos a tiempo con una oferta mejor.</p>
+    <div class="folio"><span>2 minutos</span><span>·</span><span>Sin compromiso</span></div>
+  </div>
+
+  <div class="gift-banner">🎁 Al contratar cualquier seguro, tenés un regalo</div>
+
+  <div class="tab-index" id="tabIndex">
+    <span class="idx" data-for="s1">01 · Contacto</span>
+    <span class="idx" data-for="s2">02 · Seguros</span>
+    <span class="idx" data-for="s3">03 · Vigencia</span>
+    <span class="idx" data-for="s4">04 · Cierre</span>
+  </div>
+
+  <form id="policyForm">
+
+    <section class="sheet" data-num="01" id="s1">
+      <h2>Tus datos</h2>
+      <p class="hint">Para poder contactarte con la oferta.</p>
+      <label class="field">
+        <span class="field-label">Nombre y apellidos</span>
+        <input type="text" name="nombre" required autocomplete="name">
+      </label>
+      <label class="field">
+        <span class="field-label">Teléfono</span>
+        <input type="tel" name="telefono" required autocomplete="tel" placeholder="Ej: 600 12 34 56">
+      </label>
+      <label class="field">
+        <span class="field-label">Email (opcional)</span>
+        <input type="email" name="email" autocomplete="email">
+      </label>
+    </section>
+
+    <section class="sheet" data-num="02" id="s2">
+      <h2>¿Qué seguros tienes contratados?</h2>
+      <p class="hint">Marca todos los que correspondan.</p>
+      <div class="folder-grid" id="folderGrid">
+        <label class="tab-btn"><input type="checkbox" value="Coche / vehículo"><span class="dot"></span>Coche</label>
+        <label class="tab-btn"><input type="checkbox" value="Hogar"><span class="dot"></span>Hogar</label>
+        <label class="tab-btn"><input type="checkbox" value="Vida"><span class="dot"></span>Vida</label>
+        <label class="tab-btn"><input type="checkbox" value="Salud / médico"><span class="dot"></span>Salud</label>
+        <label class="tab-btn"><input type="checkbox" value="Responsabilidad civil"><span class="dot"></span>Resp. civil</label>
+        <label class="tab-btn"><input type="checkbox" value="Comercio / negocio"><span class="dot"></span>Comercio</label>
+        <label class="tab-btn" id="otroTab"><input type="checkbox" value="Otro"><span class="dot"></span>Otro</label>
+      </div>
+      <label class="field" id="otroWrap" style="display:none;margin-top:12px;">
+        <span class="field-label">Cuéntanos cuál</span>
+        <input type="text" id="otroTexto" placeholder="Ej: seguro de mascota">
+      </label>
+    </section>
+
+    <section class="sheet" data-num="03" id="s3">
+      <h2>Compañía, precio y vencimiento</h2>
+      <p class="hint" id="pcHint">Elige arriba los seguros que tengas para completar esto.</p>
+      <div id="policyCards"></div>
+    </section>
+
+    <section class="sheet" data-num="04" id="s4">
+      <h2>Un par de preguntas más</h2>
+      <label class="field">
+        <span class="field-label">¿Estás conforme con tu cobertura actual?</span>
+        <div class="pill-row" data-group="conformidad">
+          <label class="pill"><input type="radio" name="conformidad" value="Sí">Sí</label>
+          <label class="pill"><input type="radio" name="conformidad" value="No">No</label>
+          <label class="pill"><input type="radio" name="conformidad" value="No estoy seguro/a">No estoy seguro/a</label>
+        </div>
+      </label>
+      <label class="field">
+        <span class="field-label">Autorízanos a contactarte con una oferta mejor</span>
+        <label class="consent-box" id="consentBox">
+          <input type="checkbox" name="autoriza" id="autorizaCheck">
+          <span class="check-visual"></span>
+          Sí, quiero recibir una oferta antes de que venza mi póliza
+        </label>
+      </label>
+      <label class="field">
+        <span class="field-label">¿Algo más que quieras contarnos? (opcional)</span>
+        <textarea name="comentario" placeholder="Ej: quiero comparar precios antes de renovar el del coche..."></textarea>
+      </label>
+    </section>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Enviar formulario</button>
+    <p class="error-msg" id="errorMsg">Falta completar: nombre, teléfono, al menos un seguro y sus datos de vencimiento.</p>
+  </form>
+
+  <div id="summaryView">
+    <div class="stamp" id="stampOk">✓ ¡Listo! Ya nos llegó tu información</div>
+    <div class="stamp" id="stampErr" style="display:none;background:var(--coral);">⚠ No se pudo enviar automáticamente</div>
+    <p class="hint" id="okHint" style="margin-bottom:10px;">Gracias, nos pondremos en contacto antes del vencimiento.</p>
+    <p class="hint" id="errHint" style="display:none;margin-bottom:10px;">Probá tocar el botón de abajo para enviarlo por email, o copiá el resumen.</p>
+    <div class="summary-block" id="summaryText"></div>
+    <div class="action-row">
+      <button type="button" id="copyBtn">Copiar resumen</button>
+      <a class="mail" id="mailLink" style="display:none;">Enviar por email</a>
+    </div>
+  </div>
+
+  <footer>MIS SEGUROS Y VENCIMIENTOS</footer>
+</div>
+
+<script>
+const folderGrid = document.getElementById('folderGrid');
+const policyCards = document.getElementById('policyCards');
+const pcHint = document.getElementById('pcHint');
+const otroTab = document.getElementById('otroTab');
+const otroWrap = document.getElementById('otroWrap');
+const otroTexto = document.getElementById('otroTexto');
+
+function slug(v){ return v.replace(/[^a-zA-Z0-9]/g,''); }
+
+folderGrid.querySelectorAll('.tab-btn').forEach(btn=>{
+  const cb = btn.querySelector('input');
+  cb.addEventListener('change', ()=>{
+    btn.classList.toggle('checked', cb.checked);
+    syncCards();
+    if(btn === otroTab){
+      otroWrap.style.display = cb.checked ? 'block' : 'none';
+    }
+  });
+  btn.addEventListener('click', (e)=>{
+    if(e.target.tagName !== 'INPUT'){
+      e.preventDefault();
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change', {bubbles:true}));
+    }
+  });
+});
+
+function syncCards(){
+  const checked = Array.from(folderGrid.querySelectorAll('input:checked')).map(i=>i.value);
+  // remove cards no longer checked
+  Array.from(policyCards.children).forEach(card=>{
+    if(!checked.includes(card.dataset.type)) card.remove();
+  });
+  // add cards for newly checked
+  checked.forEach(type=>{
+    if(!policyCards.querySelector('[data-type="'+CSS.escape(type)+'"]')){
+      const id = slug(type)+Math.random().toString(36).slice(2,6);
+      const card = document.createElement('div');
+      card.className = 'policy-card';
+      card.dataset.type = type;
+      card.innerHTML = `
+        <p class="pc-title">${type}</p>
+        <div class="pc-row pc-row-3">
+          <label class="field">
+            <span class="field-label">Compañía aseguradora</span>
+            <input type="text" data-field="compania" placeholder="Ej: Mapfre">
+          </label>
+          <label class="field">
+            <span class="field-label">¿Cuánto pagas?</span>
+            <input type="text" data-field="precio" inputmode="decimal" placeholder="Ej: 45 €/mes">
+          </label>
+          <label class="field">
+            <span class="field-label">Vencimiento</span>
+            <input type="month" data-field="vencimiento">
+          </label>
+        </div>`;
+      policyCards.appendChild(card);
+    }
+  });
+  pcHint.style.display = checked.length ? 'none' : 'block';
+}
+
+// consent checkbox
+const consentBox = document.getElementById('consentBox');
+if(consentBox){
+  const autorizaCheck = document.getElementById('autorizaCheck');
+  autorizaCheck.addEventListener('change', ()=>{
+    consentBox.classList.toggle('checked', autorizaCheck.checked);
+  });
+  consentBox.addEventListener('click', (e)=>{
+    if(e.target.tagName !== 'INPUT'){
+      e.preventDefault();
+      autorizaCheck.checked = !autorizaCheck.checked;
+      autorizaCheck.dispatchEvent(new Event('change', {bubbles:true}));
+    }
+  });
+}
+
+// pills
+document.querySelectorAll('.pill-row').forEach(row=>{
+  row.querySelectorAll('.pill').forEach(pill=>{
+    const input = pill.querySelector('input');
+    input.addEventListener('change', ()=>{
+      row.querySelectorAll('.pill').forEach(p=>p.classList.toggle('checked', p.querySelector('input').checked));
+    });
+    pill.addEventListener('click', (e)=>{
+      if(e.target.tagName !== 'INPUT'){
+        e.preventDefault();
+        input.checked = true;
+        input.dispatchEvent(new Event('change', {bubbles:true}));
+      }
+    });
+  });
+});
+
+// tab index progress on scroll
+const sections = ['s1','s2','s3','s4'];
+const idxEls = document.querySelectorAll('.tab-index .idx');
+function isFilled(id){
+  if(id==='s1'){
+    return document.querySelector('[name=nombre]').value.trim() && document.querySelector('[name=telefono]').value.trim();
+  }
+  if(id==='s2'){
+    return folderGrid.querySelectorAll('input:checked').length > 0;
+  }
+  if(id==='s3'){
+    const cards = policyCards.querySelectorAll('.policy-card');
+    if(!cards.length) return false;
+    return Array.from(cards).every(c=>c.querySelector('[data-field=compania]').value.trim() && c.querySelector('[data-field=vencimiento]').value);
+  }
+  if(id==='s4'){
+    return !!document.querySelector('[name=conformidad]:checked');
+  }
+}
+function refreshIndex(){
+  sections.forEach((id,i)=>{
+    idxEls[i].classList.toggle('done', !!isFilled(id));
+  });
+}
+document.getElementById('policyForm').addEventListener('input', refreshIndex);
+document.getElementById('policyForm').addEventListener('click', ()=>setTimeout(refreshIndex,10));
+
+const FORM_ENDPOINT = "https://formspree.io/f/mrpzqolz";
+
+// submit
+document.getElementById('policyForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const nombre = document.querySelector('[name=nombre]').value.trim();
+  const telefono = document.querySelector('[name=telefono]').value.trim();
+  const email = document.querySelector('[name=email]').value.trim();
+  const checkedTypes = Array.from(folderGrid.querySelectorAll('input:checked')).map(i=>i.value);
+  const cards = Array.from(policyCards.querySelectorAll('.policy-card'));
+  const errorMsg = document.getElementById('errorMsg');
+
+  const cardsOk = cards.length && cards.every(c=>c.querySelector('[data-field=compania]').value.trim() && c.querySelector('[data-field=vencimiento]').value);
+  const otroOk = !checkedTypes.includes('Otro') || otroTexto.value.trim();
+
+  if(!nombre || !telefono || !checkedTypes.length || !cardsOk || !otroOk){
+    errorMsg.style.display = 'block';
+    return;
+  }
+  errorMsg.style.display = 'none';
+
+  const conformidad = document.querySelector('[name=conformidad]:checked');
+  const autoriza = document.getElementById('autorizaCheck').checked;
+  const comentario = document.querySelector('[name=comentario]').value.trim();
+
+  let lines = [];
+  lines.push('MIS SEGUROS Y VENCIMIENTOS');
+  lines.push('');
+  lines.push('Nombre: ' + nombre);
+  lines.push('Teléfono: ' + telefono);
+  if(email) lines.push('Email: ' + email);
+  lines.push('');
+  lines.push('Seguros contratados:');
+  cards.forEach(c=>{
+    let type = c.dataset.type;
+    if(type === 'Otro' && otroTexto.value.trim()) type = 'Otro: ' + otroTexto.value.trim();
+    const compania = c.querySelector('[data-field=compania]').value.trim();
+    const precio = c.querySelector('[data-field=precio]').value.trim();
+    const venc = c.querySelector('[data-field=vencimiento]').value;
+    const [y,m] = venc.split('-');
+    const meses = ['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const vencLegible = m ? meses[parseInt(m,10)] + ' ' + y : venc;
+    lines.push('  • ' + type + ' — ' + compania + (precio ? ' — ' + precio : '') + ' — vence ' + vencLegible);
+  });
+  lines.push('');
+  lines.push('Conforme con cobertura actual: ' + (conformidad ? conformidad.value : '-'));
+  lines.push('Autoriza a contactarle con una oferta mejor: ' + (autoriza ? 'Sí' : 'No'));
+  if(comentario) { lines.push(''); lines.push('Comentario: ' + comentario); }
+
+  const summary = lines.join('\n');
+  document.getElementById('summaryText').textContent = summary;
+  document.getElementById('mailLink').href = 'mailto:larrosayasociados@gmail.com?subject=' + encodeURIComponent('Mis seguros y vencimientos') + '&body=' + encodeURIComponent(summary);
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando…';
+
+  const fd = new FormData();
+  fd.append('nombre', nombre);
+  fd.append('telefono', telefono);
+  fd.append('email', email || 'no indicado');
+  fd.append('message', summary);
+  fd.append('_subject', 'Nuevo cliente: ' + nombre + ' — sus seguros y vencimientos');
+
+  fetch(FORM_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: fd
+  })
+  .then(res => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar formulario';
+    document.getElementById('policyForm').style.display = 'none';
+    document.getElementById('summaryView').style.display = 'block';
+    window.scrollTo({top:0, behavior: 'smooth'});
+    if(res.ok){
+      document.getElementById('stampOk').style.display = 'inline-flex';
+      document.getElementById('stampErr').style.display = 'none';
+      document.getElementById('okHint').style.display = 'block';
+      document.getElementById('errHint').style.display = 'none';
+      document.getElementById('mailLink').style.display = 'none';
+    } else {
+      showSendError();
+    }
+  })
+  .catch(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar formulario';
+    document.getElementById('policyForm').style.display = 'none';
+    document.getElementById('summaryView').style.display = 'block';
+    window.scrollTo({top:0, behavior: 'smooth'});
+    showSendError();
+  });
+});
+
+function showSendError(){
+  document.getElementById('stampOk').style.display = 'none';
+  document.getElementById('stampErr').style.display = 'inline-flex';
+  document.getElementById('okHint').style.display = 'none';
+  document.getElementById('errHint').style.display = 'block';
+  document.getElementById('mailLink').style.display = 'inline-block';
+}
+
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('summaryText').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    const original = btn.textContent;
+    btn.textContent = '¡Copiado!';
+    setTimeout(()=>btn.textContent = original, 1600);
+  });
+});
+</script>
+</body>
+</html>
