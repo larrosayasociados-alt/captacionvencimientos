@@ -718,7 +718,7 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
   const fd = new FormData();
   fd.append('nombre', nombre);
   fd.append('telefono', telefono);
-  fd.append('email', email || 'no indicado');
+  if(email) fd.append('email', email);
   fd.append('message', summary);
   fd.append('_subject', 'Nuevo cliente: ' + nombre + ' — sus seguros y vencimientos');
 
