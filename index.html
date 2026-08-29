@@ -393,7 +393,7 @@
     <div class="folio"><span>2 minutos</span><span>·</span><span>Sin compromiso</span></div>
   </div>
 
-  <div class="gift-banner">🎁 Al contratar cualquier seguro, tenés un regalo</div>
+  <div class="gift-banner">🎁 Al contratar cualquier seguro, tienes un regalo</div>
 
   <div class="tab-index" id="tabIndex">
     <span class="idx" data-for="s1">01 · Contacto</span>
@@ -477,7 +477,7 @@
     <div class="stamp" id="stampOk">✓ ¡Listo! Ya nos llegó tu información</div>
     <div class="stamp" id="stampErr" style="display:none;background:var(--coral);">⚠ No se pudo enviar automáticamente</div>
     <p class="hint" id="okHint" style="margin-bottom:10px;">Gracias, nos pondremos en contacto antes del vencimiento.</p>
-    <p class="hint" id="errHint" style="display:none;margin-bottom:10px;">Probá tocar el botón de abajo para enviarlo por email, o copiá el resumen.</p>
+    <p class="hint" id="errHint" style="display:none;margin-bottom:10px;">Prueba a tocar el botón de abajo para enviarlo por email, o copia el resumen.</p>
     <p class="hint" id="errDetalle" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--coral);"></p>
     <p class="hint" id="sheetDebug" style="display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A8367;">Registro en planilla: —</p>
     <div class="summary-block" id="summaryText"></div>
@@ -629,7 +629,7 @@ document.getElementById('policyForm').addEventListener('click', ()=>setTimeout(r
 
 const FORM_ENDPOINT = "https://formspree.io/f/mrpzqolz";
 
-// ⚠️ CONFIGURACIÓN NECESARIA: pegá acá la URL que termina en /exec
+// ⚠️ CONFIGURACIÓN NECESARIA: pega aquí la URL que termina en /exec
 // que te da Google Apps Script después de implementar el script
 // "automatizacion-vencimientos.gs" (paso a paso en el propio archivo).
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-VPJUXhMextA79z8WD6kOLf_IpMHSKbtGduATrr_2sFFv4SlBo1HrOrshnc-6hysX/exec";
@@ -719,17 +719,12 @@ document.getElementById('policyForm').addEventListener('submit', (e)=>{
     }).then(() => {
       // en modo no-cors el navegador no permite leer la respuesta,
       // pero si esto se ejecuta, la petición sí llegó al servidor
-      window.__sheetStatus = 'Enviado (revisá la planilla para confirmar)';
+      window.__sheetStatus = 'Enviado (revisa la planilla para confirmar)';
       pintarEstadoSheet();
     }).catch(err => {
       window.__sheetStatus = 'Error de red — ' + (err && err.message ? err.message : err);
       pintarEstadoSheet();
     });
-  }
-
-  function pintarEstadoSheet(){
-    const el = document.getElementById('sheetDebug');
-    if(el) el.textContent = 'Registro en planilla: ' + window.__sheetStatus;
   }
 
   const submitBtn = document.getElementById('submitBtn');
