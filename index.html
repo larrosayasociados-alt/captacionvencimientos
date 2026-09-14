@@ -381,6 +381,11 @@
     margin-top:22px;
     letter-spacing:.04em;
   }
+  footer a{color:#6B6550;text-decoration:underline;text-underline-offset:2px;}
+  footer a:hover{color:var(--teal);}
+  footer .sep{margin:0 8px;opacity:.5;}
+  .legal-note{font-size:12px;color:#8A8367;margin-top:8px;line-height:1.45;}
+  .legal-note a{color:var(--teal);}
 </style>
 </head>
 <body>
@@ -462,6 +467,7 @@
           <span class="check-visual"></span>
           Sí, quiero recibir una oferta antes de que venza mi póliza
         </label>
+        <p class="legal-note">Al enviar aceptas la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y los <a href="terminos.html" target="_blank" rel="noopener">términos y condiciones</a>.</p>
       </label>
       <label class="field">
         <span class="field-label">¿Algo más que quieras contarnos? (opcional)</span>
@@ -487,7 +493,12 @@
     </div>
   </div>
 
-  <footer>MIS SEGUROS Y VENCIMIENTOS</footer>
+  <footer>
+    MIS SEGUROS Y VENCIMIENTOS
+    <div style="margin-top:8px;">
+      <a href="privacidad.html">Política de privacidad</a><span class="sep">·</span><a href="terminos.html">Términos y condiciones</a>
+    </div>
+  </footer>
 </div>
 
 <script>
